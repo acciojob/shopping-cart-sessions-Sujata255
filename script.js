@@ -1,38 +1,54 @@
-// This is the boilerplate code given for you
-// You can modify this code
-// Product data
 const products = [
-  { id: 1, name: "Product 1", price: 10 },
-  { id: 2, name: "Product 2", price: 20 },
-  { id: 3, name: "Product 3", price: 30 },
-  { id: 4, name: "Product 4", price: 40 },
-  { id: 5, name: "Product 5", price: 50 },
+    { id: 1, name: 'Product1', price: 10 },
+    { id: 2, name: 'Product2', price: 30 },
+    { id: 3, name: 'Product3', price: 50 },
+    { id: 4, name: 'Product4', price: 40 },
+    { id: 5, name: 'Product5', price: 50 }
 ];
 
-// DOM elements
-const productList = document.getElementById("product-list");
+const productListEl = document.getElementById('product-list');
+const cartListEl = document.getElementById('cart-list');
+const clearCartBtn = document.getElementById('clear-cart-btn');
 
-// Render product list
+// Initialize Cart from Session Storage
+let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+
+// Render the list of products
 function renderProducts() {
-  products.forEach((product) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
-    productList.appendChild(li);
-  });
+    products.forEach(product => {
+        const productItem = document.createElement('li');
+        productItem.innerHTML = `${product.name} - $${product.price} <button onclick="addToCart(${product.id})">Add to Cart</button>`;
+        productListEl.appendChild(productItem);
+    });
 }
 
-// Render cart list
-function renderCart() {}
+// Render the Cart
+function renderCart() {
+    cartListEl.innerHTML = ''; // Clear the current cart display
+    cart.forEach(product => {
+        const cartItem = document.createElement('li');
+        cartItem.textContent = `${product.name} - $${product.price}`;
+        cartListEl.appendChild(cartItem);
+    });
+}
 
-// Add item to cart
-function addToCart(productId) {}
+// Add Product to Cart
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        cart.push(product);
+        sessionStorage.setItem('cart', JSON.stringify(cart)); // Store cart in sessionStorage
+        renderCart(); // Update the cart display
+    }
+}
 
-// Remove item from cart
-function removeFromCart(productId) {}
+// Clear Cart
+clearCartBtn.addEventListener('click', () => {
+    cart = [];
+    sessionStorage.removeItem('cart'); // Clear the cart from sessionStorage
+    renderCart(); // Update the cart display
+});
 
-// Clear cart
-function clearCart() {}
-
-// Initial render
-renderProducts();
-renderCart();
+// Initial rendering
+renderProducts(); // Display the products on page load
+renderCart(); // Display the cart on page load, reflecting any items stored in sessionStorage
